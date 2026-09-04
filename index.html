@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f261d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Forest Training" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>Forest Training</title>
+  <style>
+    :root{
+      --forest:#0f261d;
+      --forest2:#17372b;
+      --forest3:#214a3a;
+      --cream:#f3ead7;
+      --cream2:#d6ccb8;
+      --gold:#c9a86a;
+      --line:rgba(243,234,215,.12);
+      --danger:#b86a6a;
+      --shadow:0 12px 30px rgba(0,0,0,.18);
+    }
+    *{box-sizing:border-box}
+    html{background:var(--forest)}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#0d2119,#102a20 35%,#0c2018);
+      color:var(--cream);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      min-height:100vh;
+    }
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .app{max-width:760px;margin:0 auto;padding:18px 14px 92px}
+    .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:700}
+    .title{font-size:28px;line-height:1.05;margin:5px 0 2px;font-weight:760}
+    .sub{color:var(--cream2);font-size:13px}
+    .hero{
+      padding:20px 18px;border:1px solid var(--line);border-radius:22px;
+      background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+      box-shadow:var(--shadow)
+    }
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}
+    .stat{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:15px;padding:11px}
+    .stat .k{color:var(--cream2);font-size:11px}.stat .v{margin-top:4px;font-weight:700;font-size:14px}
+    .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:14px 0}
+    .tab{
+      border:1px solid var(--line);background:#17372b;color:var(--cream);
+      border-radius:14px;padding:12px 6px;font-weight:700;font-size:13px
+    }
+    .tab.active{background:var(--cream);color:var(--forest);border-color:var(--cream)}
+    .card{
+      border:1px solid var(--line);background:rgba(23,55,43,.82);
+      border-radius:20px;padding:16px;margin:10px 0
+    }
+    .card h2,.card h3{margin:0}.muted{color:var(--cream2)}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .timer{font-size:34px;font-weight:800;letter-spacing:.03em}
+    .btn{
+      border:0;border-radius:13px;padding:12px 15px;font-weight:750;
+      background:var(--cream);color:var(--forest)
+    }
+    .btn.secondary{background:#0d211a;color:var(--cream);border:1px solid var(--line)}
+    .btn.gold{background:var(--gold);color:#10231b}
+    .btn.danger{background:transparent;color:#e2aaa3;border:1px solid rgba(226,170,163,.3)}
+    .timer-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .exercise{padding:15px;border-radius:18px;background:#143126;border:1px solid var(--line);margin:10px 0}
+    .exercise-title{font-weight:760;font-size:17px}
+    .exercise-meta{font-size:12px;color:var(--cream2);margin-top:3px}
+    .last{font-size:12px;text-align:right}.last strong{display:block;color:var(--gold);font-size:14px;margin-top:2px}
+    label{display:block;color:var(--cream2);font-size:12px;margin:13px 0 5px}
+    .weight-wrap{display:grid;grid-template-columns:1fr auto;gap:8px}
+    input{
+      width:100%;padding:12px 13px;border-radius:13px;border:1px solid var(--line);
+      background:#0d211a;color:var(--cream);outline:none;min-height:44px
+    }
+    input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,106,.15)}
+    .unit{align-self:center;color:var(--cream2);font-size:13px;padding-right:3px}
+    .sets{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .set{
+      min-width:58px;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+      background:#0d211a;color:var(--cream);font-weight:750
+    }
+    .set.done{background:var(--gold);color:var(--forest);border-color:var(--gold)}
+    .progress-track{height:8px;background:#0b1b15;border-radius:999px;overflow:hidden;margin-top:8px}
+    .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),#e0c38a);transition:width .2s ease}
+    .arc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+    .arc-step{background:#0d211a;border:1px solid var(--line);border-radius:14px;padding:12px}
+    .arc-step b{display:block;margin-bottom:4px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .history-item{border-top:1px solid var(--line);padding:11px 0}
+    .history-item:first-child{border-top:0}
+    .empty{color:var(--cream2);font-size:13px;padding:8px 0}
+    .bottom-nav{
+      position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(760px,100%);
+      padding:9px 14px calc(9px + env(safe-area-inset-bottom));
+      background:rgba(10,27,20,.96);backdrop-filter:blur(16px);border-top:1px solid var(--line);
+      display:grid;grid-template-columns:repeat(4,1fr);gap:8px;z-index:10
+    }
+    .navbtn{border:0;background:transparent;color:var(--cream2);padding:10px;border-radius:12px;font-weight:700}
+    .navbtn.active{background:#17372b;color:var(--cream)}
+    .screen{display:none}.screen.active{display:block}
+    .week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:14px}
+    .daypill{font-size:10px;text-align:center;padding:8px 2px;border-radius:10px;border:1px solid var(--line);background:#132f25}
+    .daypill.rest{background:var(--cream);color:var(--forest)}
+    .notice{font-size:12px;color:var(--cream2);margin-top:8px;line-height:1.45}
+
+
+    .water-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+    .water-big{font-size:30px;font-weight:800}
+    .estimate-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+    .estimate-box{background:#0d211a;border:1px solid var(--line);border-radius:14px;padding:12px}
+    .estimate-box .small{font-size:11px;color:var(--cream2)}
+    .estimate-box .big{font-size:22px;font-weight:800;margin-top:3px}
+    .toggle-line{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}
+
+    .chart-wrap{margin-top:14px}
+    .chart-box{
+      width:100%;height:220px;background:#0d211a;border:1px solid var(--line);
+      border-radius:16px;padding:10px;overflow:hidden
+    }
+    .chart-box svg{width:100%;height:100%;display:block}
+    .chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:9px;font-size:12px;color:var(--cream2)}
+    .legend-item{display:flex;align-items:center;gap:6px}
+    .legend-dot{width:9px;height:9px;border-radius:999px;background:var(--gold)}
+    .legend-dot.cream{background:var(--cream)}
+    .progress-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+    .progress-stat{background:#0d211a;border:1px solid var(--line);border-radius:14px;padding:11px}
+    .progress-stat .label{font-size:11px;color:var(--cream2)}
+    .progress-stat .value{font-size:19px;font-weight:800;margin-top:3px}
+
+    @media(max-width:430px){
+      .stats{grid-template-columns:1fr 1fr 1fr}.stat{padding:9px}
+      .tabs{grid-template-columns:repeat(2,1fr)}
+      .row.wrap{align-items:flex-start;flex-direction:column}
+      .timer-controls{justify-content:flex-start}
+      .arc-grid{grid-template-columns:1fr 1fr}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <section id="today" class="screen active">
+    <div class="hero">
+      <div class="eyebrow">Forest Training</div>
+      <div class="title">Your workout</div>
+      <div class="sub">Strength · Arc Trainer · Progress</div>
+      <div class="stats">
+        <div class="stat"><div class="k">Split</div><div class="v">6 on / 1 off</div></div>
+        <div class="stat"><div class="k">Rest timer</div><div class="v">90 sec</div></div>
+        <div class="stat"><div class="k">Burn target</div><div class="v">~500 kcal</div></div>
+      </div>
+      <div class="week">
+        <div class="daypill">D1<br>Legs</div><div class="daypill">D2<br>Back</div><div class="daypill">D3<br>Chest</div>
+        <div class="daypill">D4<br>Legs</div><div class="daypill">D5<br>Back</div><div class="daypill">D6<br>Chest</div>
+        <div class="daypill rest">D7<br>Rest</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-plan="legs">Legs</button>
+      <button class="tab" data-plan="back">Back</button>
+      <button class="tab" data-plan="chest">Chest</button>
+      <button class="tab" data-plan="rest">Rest</button>
+    </div>
+
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="eyebrow">Hydration</div>
+          <div class="water-big"><span id="waterNow">0</span> <span style="font-size:15px;color:var(--cream2)">oz</span></div>
+          <div class="sub">Daily goal: <span id="waterGoalLabel">80</span> oz</div>
+        </div>
+        <div style="text-align:right">
+          <div class="sub">Progress</div>
+          <strong id="waterPct" style="color:var(--gold)">0%</strong>
+        </div>
+      </div>
+      <div class="progress-track"><div id="waterFill" class="progress-fill"></div></div>
+      <div class="water-actions">
+        <button id="waterMinus" class="btn secondary" type="button">− 8 oz</button>
+        <button id="waterAdd" class="btn gold" type="button">+ 8 oz</button>
+        <button id="waterCustom" class="btn secondary" type="button">Custom</button>
+      </div>
+      <div id="waterCustomRow" style="display:none;margin-top:10px">
+        <label for="waterCustomInput">Add ounces</label>
+        <div class="weight-wrap">
+          <input id="waterCustomInput" type="number" min="1" max="128" inputmode="decimal" placeholder="12">
+          <button id="waterCustomSave" class="btn" type="button">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row wrap">
+        <div>
+          <div class="eyebrow">Automatic rest</div>
+          <div id="timerDisplay" class="timer">01:30</div>
+          <div id="timerNote" class="sub">Starts when you check off a set.</div>
+        </div>
+        <div class="timer-controls">
+          <button id="timerStart" class="btn">Start</button>
+          <button id="timerPause" class="btn secondary">Pause</button>
+          <button id="timerReset" class="btn secondary">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <h2 id="workoutName">Legs + Abs</h2>
+          <div id="workoutSubtitle" class="sub">Day 1 & 4</div>
+        </div>
+        <div style="text-align:right">
+          <div class="sub">Progress</div>
+          <strong id="progressText" style="color:var(--gold)">0%</strong>
+        </div>
+      </div>
+      <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+    </div>
+
+    <div id="exerciseList"></div>
+
+    <div id="arcCard" class="card">
+      <div class="row">
+        <div><h3>Arc Trainer · 40 min</h3><div class="sub">Baseline: 3.4 mi · 329 cal</div></div>
+        <div class="eyebrow">Cardio</div>
+      </div>
+      <div class="arc-grid">
+        <div class="arc-step"><b>0–5</b><span class="muted">Incline 2 · R10</span></div>
+        <div class="arc-step"><b>5–10</b><span class="muted">Incline 4 · R15</span></div>
+        <div class="arc-step"><b>10–15</b><span class="muted">Incline 6 · R20</span></div>
+        <div class="arc-step"><b>15–25</b><span class="muted">I8/R28 ↔ I4/R15 · 1 min</span></div>
+        <div class="arc-step"><b>25–30</b><span class="muted">Incline 8 · R22</span></div>
+        <div class="arc-step"><b>30–35</b><span class="muted">I10/R32 ↔ I4/R15 · 30 sec</span></div>
+        <div class="arc-step"><b>35–39:30</b><span class="muted">Incline 2 · R8–10</span></div>
+        <div class="arc-step"><b>Last 30 sec</b><span class="muted">I8–10 · R30–35</span></div>
+      </div>
+      <div class="notice">Aim roughly 90–110 SPM for most of the session. The machine’s calorie estimate is a useful benchmark, not an exact measurement.</div>
+      <div class="form-grid" style="margin-top:12px">
+        <div><label for="arcDistance">Distance</label><input id="arcDistance" inputmode="decimal" placeholder="3.4"></div>
+        <div><label for="arcCalories">Calories</label><input id="arcCalories" inputmode="numeric" placeholder="329"></div>
+      </div>
+    </div>
+
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <div class="eyebrow">Energy estimate</div>
+          <h3>Calories burned</h3>
+          <div class="sub">A workout estimate, not an exact measurement.</div>
+        </div>
+      </div>
+      <div class="estimate-grid">
+        <div class="estimate-box">
+          <div class="small">Estimated lifting</div>
+          <div id="liftingEstimate" class="big">0 kcal</div>
+        </div>
+        <div class="estimate-box">
+          <div class="small">Estimated total</div>
+          <div id="totalEstimate" class="big">0 kcal</div>
+        </div>
+      </div>
+      <div id="estimateNote" class="notice">Total uses your Arc entry when available; otherwise it uses your 329-calorie personal Arc baseline.</div>
+    </div>
+
+    <div class="card">
+      <button id="completeWorkout" class="btn gold" style="width:100%;min-height:48px">Complete Workout</button>
+      <div id="completeMessage" class="notice" style="text-align:center"></div>
+    </div>
+  </section>
+
+  <section id="history" class="screen">
+    <div class="hero">
+      <div class="eyebrow">History</div>
+      <div class="title">Previous workouts</div>
+      <div class="sub">Weights, completed sets, Arc distance and calories are stored on this device.</div>
+    </div>
+    <div class="card">
+      <div class="row"><h3>Workout log</h3><button id="clearHistory" class="btn danger">Clear</button></div>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+
+  <section id="progress" class="screen">
+    <div class="hero">
+      <div class="eyebrow">Progress</div>
+      <div class="title">Your training trend</div>
+      <div class="sub">Automatically updates whenever you save a workout.</div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <h3>Daily progress</h3>
+          <div class="sub">Last 14 training days</div>
+        </div>
+        <div class="eyebrow">Daily</div>
+      </div>
+      <div class="progress-summary">
+        <div class="progress-stat"><div class="label">Workouts</div><div id="dailyWorkoutCount" class="value">0</div></div>
+        <div class="progress-stat"><div class="label">Arc calories</div><div id="dailyCaloriesTotal" class="value">0</div></div>
+        <div class="progress-stat"><div class="label">Arc miles</div><div id="dailyDistanceTotal" class="value">0</div></div>
+      </div>
+      <div class="chart-wrap">
+        <div id="dailyChart" class="chart-box" aria-label="Daily workout progress chart"></div>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-dot"></span>Arc calories</div>
+          <div class="legend-item"><span class="legend-dot cream"></span>Arc miles × 100</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <h3>Weekly progress</h3>
+          <div class="sub">Last 8 weeks</div>
+        </div>
+        <div class="eyebrow">Weekly</div>
+      </div>
+      <div class="progress-summary">
+        <div class="progress-stat"><div class="label">This week</div><div id="weekWorkoutCount" class="value">0</div></div>
+        <div class="progress-stat"><div class="label">Week calories</div><div id="weekCaloriesTotal" class="value">0</div></div>
+        <div class="progress-stat"><div class="label">Week miles</div><div id="weekDistanceTotal" class="value">0</div></div>
+      </div>
+      <div class="chart-wrap">
+        <div id="weeklyChart" class="chart-box" aria-label="Weekly workout progress chart"></div>
+        <div class="chart-legend">
+          <div class="legend-item"><span class="legend-dot"></span>Total Arc calories</div>
+          <div class="legend-item"><span class="legend-dot cream"></span>Workouts × 100</div>
+        </div>
+      </div>
+      <div class="notice">The graphs use the Arc distance/calories and completed workouts you save in the app. They are for tracking your own trend; machine calorie numbers are estimates.</div>
+    </div>
+  </section>
+
+  <section id="settings" class="screen">
+    <div class="hero">
+      <div class="eyebrow">Settings</div>
+      <div class="title">Make it yours</div>
+      <div class="sub">Your data stays in this browser using local storage.</div>
+    </div>
+    <div class="card">
+      <label for="restSeconds">Automatic rest timer (seconds)</label>
+      <input id="restSeconds" type="number" min="15" max="600" step="5" value="90">
+      <div class="notice">Changing this updates the timer used after every checked set.</div>
+    </div>
+
+    <div class="card">
+      <h3>Calorie estimate</h3>
+      <label for="bodyWeight">Current body weight (lb)</label>
+      <input id="bodyWeight" type="number" min="80" max="500" step="1" value="210">
+      <div class="notice">Used only to keep future estimates more personalized. Your saved value stays on this device.</div>
+    </div>
+
+
+    <div class="card">
+      <h3>Hydration</h3>
+      <label for="waterGoal">Daily water goal (oz)</label>
+      <input id="waterGoal" type="number" min="16" max="256" step="8" value="80">
+      <div class="notice">The Today screen resets your water total each calendar day.</div>
+    </div>
+    <div class="card">
+      <h3>Rest notification</h3>
+      <div class="notice">When supported, Forest Training can alert you when your rest timer ends.</div>
+      <button id="enableNotifications" class="btn gold" type="button" style="margin-top:12px;width:100%">Enable rest notifications</button>
+      <div id="notificationStatus" class="notice" aria-live="polite"></div>
+    </div>
+
+    <div class="card">
+      <h3>Install on iPhone</h3>
+      <div class="notice" style="font-size:13px">
+        Host this site, open it in Safari, tap the Share button, then choose <b>Add to Home Screen</b>.
+        It will launch in its own app-style window.
+      </div>
+    </div>
+  </section>
+</div>
+
+<nav class="bottom-nav">
+  <button class="navbtn active" data-screen="today">Today</button>
+  <button class="navbtn" data-screen="history">History</button>
+  <button class="navbtn" data-screen="progress">Progress</button>
+  <button class="navbtn" data-screen="settings">Settings</button>
+</nav>
+
+<script>
+(() => {
+  const plans = {
+    legs: {
+      name:"Legs + Abs", subtitle:"Day 1 & 4",
+      exercises:[
+        ["Leg Press",4,"8–12","120"],["Leg Curl",4,"10–15","50"],["Leg Extension",3,"10–15","50"],
+        ["Hip Abduction",3,"15–20","75"],["Hip Adduction",3,"15–20","65"],["Calf Raise",3,"10–15","60"],
+        ["Ab Machine / Cable Crunch",3,"12–15","40"]
+      ]
+    },
+    back: {
+      name:"Back + Biceps + Abs", subtitle:"Day 2 & 5",
+      exercises:[
+        ["Lat Pulldown",4,"8–12","60"],["Seated Cable Row",4,"8–12","60"],["Chest-Supported Row",3,"10–12","50"],
+        ["Straight-Arm Pulldown",3,"12–15","25"],["Biceps Curl",3,"10–12","12"],["Hammer Curl",3,"10–12","12"],
+        ["Cable Crunch",3,"12–15","40"],["Knee Raise",3,"10–15","Bodyweight"]
+      ]
+    },
+    chest: {
+      name:"Chest + Triceps + Abs", subtitle:"Day 3 & 6",
+      exercises:[
+        ["Chest Press",4,"8–12","45"],["Incline Chest Press",3,"8–12","40"],["Pec Deck / Fly",3,"10–15","40"],
+        ["Shoulder Press",3,"8–12","25"],["Triceps Pushdown",3,"10–15","25"],["Overhead Triceps Extension",3,"10–15","20"],
+        ["Ab Machine / Cable Crunch",3,"12–15","40"],["Reverse Crunch",3,"12–20","Bodyweight"]
+      ]
+    },
+    rest:{name:"Rest Day",subtitle:"Day 7",exercises:[]}
+  };
+
+  const store = {
+    get:(k,f)=>{ try{ const v=localStorage.getItem(k); return v===null?f:JSON.parse(v)}catch{return f}},
+    set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))
+  };
+
+  let current = store.get("ft-current-plan","legs");
+  let checked = {};
+  let timerId = null;
+  let timerLeft = store.get("ft-rest-seconds",90);
+  let timerRunning = false;
+
+  const qs = s => document.querySelector(s);
+  const qsa = s => [...document.querySelectorAll(s)];
+
+  function keyForWeight(plan, name){ return `ft-weight:${plan}:${name}` }
+
+
+  function localDateKey(d=new Date()){
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+
+  function waterKey(){ return "ft-water:"+localDateKey(); }
+  function waterGoal(){ return Math.max(16,Math.min(256,Number(store.get("ft-water-goal",80))||80)); }
+  function currentWater(){ return Math.max(0,Number(store.get(waterKey(),0))||0); }
+
+  function renderWater(){
+    const now=currentWater(), goal=waterGoal();
+    const pct=Math.min(100,Math.round(now/goal*100));
+    qs("#waterNow").textContent=Math.round(now);
+    qs("#waterGoalLabel").textContent=Math.round(goal);
+    qs("#waterPct").textContent=pct+"%";
+    qs("#waterFill").style.width=pct+"%";
+    if(qs("#waterGoal")) qs("#waterGoal").value=goal;
+  }
+
+  function changeWater(delta){
+    store.set(waterKey(),Math.max(0,currentWater()+delta));
+    renderWater();
+  }
+
+  const liftingFullEstimate = {legs:230, back:200, chest:190, rest:0};
+
+  function calculateCalories(){
+    const all=qsa("#exerciseList .set");
+    const done=all.filter(x=>x.classList.contains("done")).length;
+    const fraction=all.length?done/all.length:(current==="rest"?0:0);
+    const lift=Math.round((liftingFullEstimate[current]||0)*fraction);
+    const enteredArc=Number((qs("#arcCalories")?.value||"").trim());
+    const arc=Number.isFinite(enteredArc)&&enteredArc>0?enteredArc:(current==="rest"?0:329);
+    const total=lift+arc;
+    if(qs("#liftingEstimate")) qs("#liftingEstimate").textContent=lift+" kcal";
+    if(qs("#totalEstimate")) qs("#totalEstimate").textContent=total+" kcal";
+    if(qs("#estimateNote")){
+      qs("#estimateNote").textContent=(Number.isFinite(enteredArc)&&enteredArc>0)
+        ?"Total uses the Arc calories you entered plus an estimate for completed lifting sets."
+        :"Total currently uses your 329-calorie Arc baseline plus an estimate for completed lifting sets.";
+    }
+  }
+
+  async function showRestNotification(){
+    const message="Recovery complete. Your next set awaits.";
+    try{
+      if(!("Notification" in window) || Notification.permission!=="granted") return;
+      if("serviceWorker" in navigator){
+        const reg=await navigator.serviceWorker.ready;
+        await reg.showNotification("Forest Training",{
+          body:message,
+          icon:"icon-192.png",
+          badge:"icon-192.png",
+          tag:"forest-rest-complete",
+          renotify:true
+        });
+      }else{
+        new Notification("Forest Training",{body:message,icon:"icon-192.png"});
+      }
+    }catch(e){}
+  }
+
+
+  function renderPlan(){
+    const p = plans[current];
+    qs("#workoutName").textContent = p.name;
+    qs("#workoutSubtitle").textContent = p.subtitle;
+    qsa(".tab").forEach(b=>b.classList.toggle("active",b.dataset.plan===current));
+    const list=qs("#exerciseList");
+    list.innerHTML="";
+    checked={};
+
+    if(current==="rest"){
+      list.innerHTML='<div class="card"><h3>Recovery day</h3><div class="notice">No lifting required. Take the day off and come back fresh.</div></div>';
+      qs("#arcCard").style.display="none";
+      updateProgress();
+      return;
+    }
+    qs("#arcCard").style.display="block";
+
+    p.exercises.forEach((ex,idx)=>{
+      const [name,sets,reps,defaultWeight]=ex;
+      const previous=store.get(keyForWeight(current,name),defaultWeight);
+      const unit = previous==="Bodyweight" ? "" : "lb";
+      const card=document.createElement("div");
+      card.className="exercise";
+      card.innerHTML=`
+        <div class="row">
+          <div><div class="exercise-title">${name}</div><div class="exercise-meta">${sets} × ${reps}</div></div>
+          <div class="last"><span class="muted">Last workout</span><strong>${previous}${unit==="lb"?" lb":""}</strong></div>
+        </div>
+        <label for="wt-${idx}">Today's weight</label>
+        <div class="weight-wrap">
+          <input id="wt-${idx}" data-weight-name="${name}" value="${previous==="Bodyweight"?"":previous}" placeholder="${previous==="Bodyweight"?"Bodyweight":"Weight"}" inputmode="decimal">
+          <div class="unit">${previous==="Bodyweight"?"":"lb"}</div>
+        </div>
+        <div class="sets" data-set-wrap="${idx}"></div>`;
+      list.appendChild(card);
+      const wrap=card.querySelector(`[data-set-wrap="${idx}"]`);
+      for(let s=1;s<=sets;s++){
+        const btn=document.createElement("button");
+        btn.className="set"; btn.type="button"; btn.textContent=`Set ${s}`;
+        btn.addEventListener("click",()=>{
+          btn.classList.toggle("done");
+          checked[`${idx}-${s}`]=btn.classList.contains("done");
+          if(btn.classList.contains("done")) startTimer(true);
+          updateProgress();
+        });
+        wrap.appendChild(btn);
+      }
+    });
+    updateProgress();
+    calculateCalories();
+  }
+
+  function updateProgress(){
+    const all=qsa("#exerciseList .set");
+    const done=all.filter(x=>x.classList.contains("done")).length;
+    const pct=all.length?Math.round(done/all.length*100):(current==="rest"?100:0);
+    qs("#progressText").textContent=pct+"%";
+    qs("#progressFill").style.width=pct+"%";
+    calculateCalories();
+  }
+
+  function restSeconds(){ return Math.max(15,Math.min(600,Number(store.get("ft-rest-seconds",90))||90)) }
+  function renderTimer(){
+    const m=Math.floor(timerLeft/60).toString().padStart(2,"0");
+    const s=(timerLeft%60).toString().padStart(2,"0");
+    qs("#timerDisplay").textContent=`${m}:${s}`;
+    qs("#timerNote").textContent=timerRunning?"Resting…":"Starts when you check off a set.";
+  }
+  function startTimer(reset=true){
+    if(reset) timerLeft=restSeconds();
+    clearInterval(timerId);
+    timerRunning=true; renderTimer();
+    timerId=setInterval(()=>{
+      timerLeft--; renderTimer();
+      if(timerLeft<=0){ clearInterval(timerId); timerId=null; timerRunning=false; timerLeft=0; renderTimer(); showRestNotification(); }
+    },1000);
+  }
+  function pauseTimer(){ clearInterval(timerId); timerId=null; timerRunning=false; renderTimer(); }
+  function resetTimer(){ pauseTimer(); timerLeft=restSeconds(); renderTimer(); }
+
+
+  qs("#waterMinus").addEventListener("click",()=>changeWater(-8));
+  qs("#waterAdd").addEventListener("click",()=>changeWater(8));
+  qs("#waterCustom").addEventListener("click",()=>{
+    const row=qs("#waterCustomRow");
+    row.style.display=row.style.display==="none"?"block":"none";
+  });
+  qs("#waterCustomSave").addEventListener("click",()=>{
+    const v=Math.max(0,Math.min(128,Number(qs("#waterCustomInput").value)||0));
+    if(v>0){changeWater(v);qs("#waterCustomInput").value="";qs("#waterCustomRow").style.display="none";}
+  });
+
+  qs("#arcCalories").addEventListener("input",calculateCalories);
+
+  qs("#enableNotifications").addEventListener("click",async()=>{
+    const status=qs("#notificationStatus");
+    if(!("Notification" in window)){
+      status.textContent="Notifications are not supported in this browser. On iPhone, add Forest Training to your Home Screen and open it from there.";
+      return;
+    }
+    try{
+      const permission=await Notification.requestPermission();
+      if(permission==="granted"){
+        status.textContent="Enabled. When your timer reaches zero: “Recovery complete. Your next set awaits.”";
+      }else if(permission==="denied"){
+        status.textContent="Notifications are blocked. You can change permission in your iPhone settings if you want them later.";
+      }else{
+        status.textContent="Notification permission was not enabled.";
+      }
+    }catch(e){
+      status.textContent="On iPhone, install Forest Training to your Home Screen first, then enable notifications from inside the app.";
+    }
+  });
+
+
+  qsa(".tab").forEach(b=>b.addEventListener("click",()=>{
+    current=b.dataset.plan; store.set("ft-current-plan",current); renderPlan();
+  }));
+  qs("#timerStart").addEventListener("click",()=>startTimer(false));
+  qs("#timerPause").addEventListener("click",pauseTimer);
+  qs("#timerReset").addEventListener("click",resetTimer);
+
+  qs("#completeWorkout").addEventListener("click",()=>{
+    if(current==="rest"){
+      qs("#completeMessage").textContent="Rest day complete ✓";
+      return;
+    }
+    const all=qsa("#exerciseList .set");
+    const done=all.filter(x=>x.classList.contains("done")).length;
+    if(done<all.length){
+      qs("#completeMessage").textContent=`You still have ${all.length-done} sets left.`;
+      return;
+    }
+    const weights={};
+    qsa("[data-weight-name]").forEach(inp=>{
+      const name=inp.dataset.weightName;
+      const val=(inp.value||"").trim();
+      const previous=store.get(keyForWeight(current,name),"");
+      weights[name]=val||previous;
+      if(val) store.set(keyForWeight(current,name),val);
+    });
+    const entry={
+      date:new Date().toISOString(),
+      plan:current,
+      workout:plans[current].name,
+      weights,
+      arcDistance:(qs("#arcDistance").value||"").trim(),
+      arcCalories:(qs("#arcCalories").value||"").trim(),
+      estimatedCalories:parseInt((qs("#totalEstimate").textContent||"0").replace(/[^0-9]/g,""),10)||0,
+      waterOz:currentWater()
+    };
+    const hist=store.get("ft-history",[]);
+    hist.unshift(entry);
+    store.set("ft-history",hist.slice(0,100));
+    qs("#completeMessage").textContent="Workout saved ✓";
+    renderHistory();
+    renderProgress();
+  });
+
+  function renderHistory(){
+    const hist=store.get("ft-history",[]);
+    const wrap=qs("#historyList");
+    if(!hist.length){wrap.innerHTML='<div class="empty">No saved workouts yet.</div>';return}
+    wrap.innerHTML=hist.map(item=>{
+      const d=new Date(item.date);
+      const when=d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+      const w=Object.entries(item.weights||{}).map(([k,v])=>`${k}: ${v}${v==="Bodyweight"?"":" lb"}`).join(" · ");
+      const arc=(item.arcDistance||item.arcCalories)?`<div class="sub" style="margin-top:5px">Arc: ${item.arcDistance||"—"} mi · ${item.arcCalories||"—"} cal</div>`:"";
+      const extras=(item.estimatedCalories||item.waterOz)?`<div class="sub" style="margin-top:5px">Estimated total: ${item.estimatedCalories||"—"} kcal · Water: ${item.waterOz||0} oz</div>`:"";
+      return `<div class="history-item"><div class="row"><strong>${item.workout}</strong><span class="sub">${when}</span></div><div class="sub" style="margin-top:6px">${w}</div>${arc}${extras}</div>`;
+    }).join("");
+  }
+
+
+  function startOfWeek(date){
+    const d=new Date(date);
+    d.setHours(0,0,0,0);
+    const day=(d.getDay()+6)%7;
+    d.setDate(d.getDate()-day);
+    return d;
+  }
+
+  function safeNum(v){
+    const n=parseFloat(v);
+    return Number.isFinite(n)?n:0;
+  }
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  }
+
+  function renderLineChart(el, rows, key1, key2){
+    if(!el) return;
+    if(!rows.length){
+      el.innerHTML='<div class="empty">Save a workout to start your graph.</div>';
+      return;
+    }
+    const W=700,H=200,pL=42,pR=12,pT=14,pB=34;
+    const vals=rows.flatMap(r=>[safeNum(r[key1]),safeNum(r[key2])]);
+    const max=Math.max(1,...vals)*1.12;
+    const x=i=>pL+(rows.length===1?(W-pL-pR)/2:i*(W-pL-pR)/(rows.length-1));
+    const y=v=>pT+(H-pT-pB)*(1-safeNum(v)/max);
+    const line=(key)=>rows.map((r,i)=>(i?"L":"M")+x(i).toFixed(1)+" "+y(r[key]).toFixed(1)).join(" ");
+    const ticks=[0,.25,.5,.75,1].map(t=>{
+      const yy=pT+(H-pT-pB)*(1-t);
+      const val=Math.round(max*t);
+      return `<line x1="${pL}" y1="${yy}" x2="${W-pR}" y2="${yy}" stroke="rgba(243,234,215,.08)" />
+      <text x="${pL-7}" y="${yy+4}" text-anchor="end" font-size="10" fill="#c7bda8">${val}</text>`;
+    }).join("");
+    const labels=rows.map((r,i)=>{
+      if(rows.length>7 && i%2===1 && i!==rows.length-1) return "";
+      return `<text x="${x(i)}" y="${H-9}" text-anchor="middle" font-size="10" fill="#c7bda8">${esc(r.label)}</text>`;
+    }).join("");
+    const dots=rows.map((r,i)=>`<circle cx="${x(i)}" cy="${y(r[key1])}" r="3" fill="#c9a86a"/>`).join("");
+    el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img">
+      ${ticks}
+      <path d="${line(key1)}" fill="none" stroke="#c9a86a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="${line(key2)}" fill="none" stroke="#f3ead7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
+      ${dots}${labels}
+    </svg>`;
+  }
+
+  function renderBarChart(el, rows){
+    if(!el) return;
+    if(!rows.length){
+      el.innerHTML='<div class="empty">Save workouts across multiple days to build weekly progress.</div>';
+      return;
+    }
+    const W=700,H=200,pL=42,pR=12,pT=14,pB=34;
+    const vals=rows.flatMap(r=>[safeNum(r.calories),safeNum(r.workoutsScaled)]);
+    const max=Math.max(1,...vals)*1.12;
+    const slot=(W-pL-pR)/rows.length;
+    const barW=Math.max(10,slot*.28);
+    const y=v=>pT+(H-pT-pB)*(1-safeNum(v)/max);
+    const ticks=[0,.25,.5,.75,1].map(t=>{
+      const yy=pT+(H-pT-pB)*(1-t);
+      const val=Math.round(max*t);
+      return `<line x1="${pL}" y1="${yy}" x2="${W-pR}" y2="${yy}" stroke="rgba(243,234,215,.08)" />
+      <text x="${pL-7}" y="${yy+4}" text-anchor="end" font-size="10" fill="#c7bda8">${val}</text>`;
+    }).join("");
+    const bars=rows.map((r,i)=>{
+      const cx=pL+slot*i+slot/2;
+      const y1=y(r.calories),h1=H-pB-y1;
+      const y2=y(r.workoutsScaled),h2=H-pB-y2;
+      return `<rect x="${cx-barW-2}" y="${y1}" width="${barW}" height="${h1}" rx="4" fill="#c9a86a"/>
+      <rect x="${cx+2}" y="${y2}" width="${barW}" height="${h2}" rx="4" fill="#f3ead7" opacity=".9"/>
+      <text x="${cx}" y="${H-9}" text-anchor="middle" font-size="10" fill="#c7bda8">${esc(r.label)}</text>`;
+    }).join("");
+    el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img">${ticks}${bars}</svg>`;
+  }
+
+  function renderProgress(){
+    const hist=store.get("ft-history",[]);
+    const today=new Date();
+    const byDay=new Map();
+
+    hist.forEach(item=>{
+      const d=new Date(item.date);
+      if(!Number.isFinite(d.getTime())) return;
+      const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+      const row=byDay.get(key)||{date:d,calories:0,distance:0,workouts:0};
+      row.calories+=safeNum(item.arcCalories);
+      row.distance+=safeNum(item.arcDistance);
+      row.workouts+=1;
+      byDay.set(key,row);
+    });
+
+    const daily=[...byDay.values()].sort((a,b)=>a.date-b.date).slice(-14).map(r=>({
+      label:r.date.toLocaleDateString(undefined,{month:"short",day:"numeric"}),
+      calories:Math.round(r.calories),
+      distanceScaled:Math.round(r.distance*100),
+      distance:r.distance,
+      workouts:r.workouts
+    }));
+
+    qs("#dailyWorkoutCount").textContent=daily.reduce((s,r)=>s+r.workouts,0);
+    qs("#dailyCaloriesTotal").textContent=Math.round(daily.reduce((s,r)=>s+r.calories,0));
+    qs("#dailyDistanceTotal").textContent=daily.reduce((s,r)=>s+r.distance,0).toFixed(1);
+    renderLineChart(qs("#dailyChart"),daily,"calories","distanceScaled");
+
+    const weekNow=startOfWeek(today);
+    const weeks=[];
+    for(let i=7;i>=0;i--){
+      const start=new Date(weekNow); start.setDate(start.getDate()-i*7);
+      const end=new Date(start); end.setDate(end.getDate()+7);
+      let calories=0,distance=0,workouts=0;
+      hist.forEach(item=>{
+        const d=new Date(item.date);
+        if(d>=start && d<end){
+          calories+=safeNum(item.arcCalories);
+          distance+=safeNum(item.arcDistance);
+          workouts+=1;
+        }
+      });
+      weeks.push({
+        label:start.toLocaleDateString(undefined,{month:"short",day:"numeric"}),
+        calories:Math.round(calories),
+        workouts:workouts,
+        workoutsScaled:workouts*100,
+        distance:distance
+      });
+    }
+
+    const currentWeek=weeks[weeks.length-1];
+    qs("#weekWorkoutCount").textContent=currentWeek.workouts;
+    qs("#weekCaloriesTotal").textContent=currentWeek.calories;
+    qs("#weekDistanceTotal").textContent=currentWeek.distance.toFixed(1);
+    renderBarChart(qs("#weeklyChart"),weeks);
+  }
+
+
+  qs("#clearHistory").addEventListener("click",()=>{
+    if(confirm("Clear all workout history?")){ store.set("ft-history",[]); renderHistory(); renderProgress(); }
+  });
+
+  qsa(".navbtn").forEach(b=>b.addEventListener("click",()=>{
+    qsa(".navbtn").forEach(x=>x.classList.toggle("active",x===b));
+    qsa(".screen").forEach(x=>x.classList.toggle("active",x.id===b.dataset.screen));
+    if(b.dataset.screen==="history")renderHistory();
+    if(b.dataset.screen==="progress")renderProgress();
+  }));
+
+
+  const wg=qs("#waterGoal");
+  wg.value=store.get("ft-water-goal",80);
+  wg.addEventListener("change",()=>{
+    let v=Math.max(16,Math.min(256,Number(wg.value)||80));
+    wg.value=v;store.set("ft-water-goal",v);renderWater();
+  });
+
+  const bw=qs("#bodyWeight");
+  bw.value=store.get("ft-body-weight",210);
+  bw.addEventListener("change",()=>{
+    let v=Math.max(80,Math.min(500,Number(bw.value)||210));
+    bw.value=v;store.set("ft-body-weight",v);
+  });
+
+
+  const rs=qs("#restSeconds");
+  rs.value=store.get("ft-rest-seconds",90);
+  rs.addEventListener("change",()=>{
+    let v=Math.max(15,Math.min(600,Number(rs.value)||90));
+    rs.value=v; store.set("ft-rest-seconds",v); timerLeft=v; pauseTimer(); renderTimer();
+  });
+
+  renderPlan(); renderTimer(); renderHistory(); renderProgress(); renderWater(); calculateCalories();
+
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}));
+  }
+})();
+</script>
+</body>
+</html>
